@@ -349,3 +349,106 @@ describe('PATCH /products/:ProductId set category for product', function () {
         }
     });
 });
+
+describe('PUT /products/:ProductId', function () {
+    it('Success update product', function (done) {
+        let body = {
+            name: 'Product name edit',
+            price: 100000,
+            image_url: 'Image edit',
+            stock: 10
+        }
+        request(app)
+            .put('/products/' + newProduct.id)
+            .set({ access_token })
+            .send(body)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(200);
+                expect(res.body.message).toEqual('Updated product successfully');
+                expect(typeof res.body.data).toEqual('object');
+                done();
+            });
+    });
+    it('Failed, stock and price less than 0', function (done) {
+        let body = {
+            name: 'Product name edit',
+            price: -100000,
+            image_url: 'Image edit',
+            stock: -10
+        }
+        request(app)
+            .put('/products/' + newProduct.id)
+            .set({ access_token })
+            .send(body)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(400);
+                expect(res.body).toHaveProperty('errors');
+                expect(Array.isArray(res.body.errors)).toEqual(true);
+                done();
+            });
+    });
+    it('Failed, required fields is empty', function (done) {
+        let body = {
+            name: '',
+            price: null,
+            image_url: '',
+            stock: null
+        }
+        request(app)
+            .put('/products/' + newProduct.id)
+            .set({ access_token })
+            .send(body)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(400);
+                expect(res.body).toHaveProperty('errors');
+                expect(Array.isArray(res.body.errors)).toEqual(true);
+                done();
+            });
+    });
+    it('Failed, no access_token', function (done) {
+        let body = {
+            name: 'Product name edit',
+            price: 100000,
+            image_url: 'image edit',
+            stock: 10
+        }
+        request(app)
+            .put('/products/' + newProduct.id)
+            .send(body)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('Invalid token');
+                done();
+            });
+    });
+    it('Failed, User role is not admin', async function (done) {
+        let body = {
+            name: 'Product name edit',
+            price: 100000,
+            image_url: 'image edit',
+            stock: 10
+        }
+        await User.update({ RoleId: 2 }, {
+            where: { id: 1 }
+        });
+        request(app)
+            .put('/products/' + newProduct.id)
+            .send(body)
+            .set({ access_token })
+            .end(async (err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('You have no access');
+                await User.update({ RoleId: 1 }, {
+                    where: { id: 1 }
+                });
+                done();
+            });
+    });
+});
