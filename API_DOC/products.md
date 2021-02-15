@@ -47,7 +47,7 @@ _Request Body_
 }
 ```
 
-_Response (200 - OK)_
+_Response (201 - OK)_
 ```
 {
     "message": "Added new product successfully",
