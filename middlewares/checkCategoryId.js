@@ -2,7 +2,7 @@ const { Category } = require('../models');
 
 const checkCategoryId = async (req, res, next) => {
     try {
-        const { CategoryId } = req.body;
+        const CategoryId = req.body.CategoryId || req.params.CategoryId;
         if (!CategoryId) throw 404;
         const category = await Category.findByPk(CategoryId);
         if (!category) throw 404;

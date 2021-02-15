@@ -63,7 +63,7 @@ _Response (200 - OK)_
 
 &nbsp;
 
-### POST /products/:ProductId
+### PATCH /products/:ProductId
 
 > Set category for a product
 
@@ -174,7 +174,7 @@ _Response (200 - OK)_
 
 ### GET /products
 
-> Get all products
+> Get products by categoryId
 
 _Request Header_
 ```
@@ -221,6 +221,104 @@ _Response (200 - OK)_
         ]
     }
 ]
+```
+
+&nbsp;
+
+### GET /products/:ProductId
+
+> Get product by id
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+not needed
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Success",
+    "data": {
+        "id": 3,
+        "name": "product 2",
+        "price": 100000,
+        "image_url": "image product 2",
+        "stock": 10,
+        "createdAt": "2021-02-14T13:23:44.147Z",
+        "updatedAt": "2021-02-15T07:45:32.133Z"
+    }
+}
+```
+
+&nbsp;
+
+### PUT /products/:ProductId
+
+> Edit Product
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+{
+    name: <product name>,
+    price: <product price>,
+    image_url: <product image_url>,
+    stock: <product stock>,
+}
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Updated product successfully",
+    "data": {
+        "id": 3,
+        "name": "product 2",
+        "price": 100000,
+        "image_url": "image product 2",
+        "stock": 10,
+        "createdAt": "2021-02-14T13:23:44.147Z",
+        "updatedAt": "2021-02-15T08:02:31.932Z"
+    }
+}
+```
+
+&nbsp;
+
+### DELETE /products/:ProductId
+
+> Delete Product
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+not needed
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Deleted product successfully"
+}
 ```
 
 &nbsp;

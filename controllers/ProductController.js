@@ -35,6 +35,20 @@ class ProductController {
         }
     }
 
+    static async readById(req, res, next) {
+        try {
+            const { ProductId } = req.params;
+            const product = await Product.findByPk(ProductId);
+            const msg = {
+                message: 'Success',
+                data: product
+            }
+            res.status(200).json(msg);
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async readByCategory(req, res, next) {
         try {
             const { CategoryId } = req.query;
@@ -55,6 +69,37 @@ class ProductController {
             }
             if (products.length === 0) throw 404;
             res.status(200).json(products);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async editProduct(req, res, next) {
+        try {
+            const { ProductId } = req.params;
+            const { name, price, image_url, stock } = req.body;
+            const updatedProduct = await Product.update(
+                { name, price, image_url, stock },
+                { where: { id: ProductId }, returning: true }
+            );
+            const msg = {
+                message: 'Updated product successfully',
+                data: updatedProduct[1][0]
+            }
+            res.status(200).json(msg);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async deleteProduct(req, res, next) {
+        try {
+            const { ProductId } = req.params;
+            await Product.destroy({
+                where: { id: ProductId }
+            });
+            const msg = { message: 'Deleted product successfully' }
+            res.status(200).json(msg);
         } catch (err) {
             next(err);
         }
