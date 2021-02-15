@@ -8,5 +8,6 @@ router.get('/', BannerController.readAllBanner);
 router.get('/:BannerId', checkBannerId, BannerController.readBannerById);
 router.post('/', checkRoleId, checkCategoryId, BannerController.addBanner);
 router.put('/:BannerId', checkRoleId, checkBannerId, checkCategoryId, BannerController.editBanner);
+router.delete('/:BannerId', checkRoleId, checkBannerId, BannerController.deleteBanner);
 
 module.exports = router;

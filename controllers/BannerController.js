@@ -60,6 +60,18 @@ class BannerController {
             next(err);
         }
     }
+
+    static async deleteBanner(req, res, next) {
+        try {
+            const { BannerId } = req.params;
+            await Banner.destroy({
+                where: { id: BannerId }
+            });
+            res.status(200).json({ message: 'Deleted banner successfully' });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = BannerController;

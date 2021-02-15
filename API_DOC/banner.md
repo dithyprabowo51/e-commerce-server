@@ -166,3 +166,28 @@ _Response (200 - OK)_
 ```
 
 &nbsp;
+
+### DELETE /banners/:BannerId
+
+> Edit banner
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+not needed
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Deleted banner successfully"
+}
+```
+
+&nbsp;
