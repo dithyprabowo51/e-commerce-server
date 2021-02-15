@@ -29,7 +29,11 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notNull: { msg: 'Product price cant be null' },
         notEmpty: { msg: 'Product price cant be empty' },
-        isInt: { msg: 'Product price must be number' }
+        isInt: { msg: 'Product price must be number' },
+        min: {
+          args: [0],
+          msg: 'Price must be greater than 0'
+        }
       }
     },
     image_url: {
@@ -46,7 +50,11 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notNull: { msg: 'Product stock cant be null' },
         notEmpty: { msg: 'Product stock cant be empty' },
-        isInt: { msg: 'Product stock must be number' }
+        isInt: { msg: 'Product stock must be number' },
+        min: {
+          args: [0],
+          msg: 'Stock must be greater than 0'
+        }
       }
     }
   }, {
