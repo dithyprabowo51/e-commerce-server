@@ -452,3 +452,55 @@ describe('PUT /products/:ProductId', function () {
             });
     });
 });
+
+describe('DELETE /products/:ProductId', function () {
+    it('Failed, id product not found', function (done) {
+        request(app)
+            .delete('/products/' + 1000000)
+            .set({ access_token })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(404);
+                expect(res.body.message).toEqual('Data not found');
+                done();
+            });
+    });
+    it('Failed, no access_token', function (done) {
+        request(app)
+            .delete('/products/' + newProduct.id)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body.message).toEqual('Invalid token');
+                done();
+            });
+    });
+    it('Failed, user role is not admin', async function (done) {
+        await User.update({ RoleId: 2 }, {
+            where: { id: 1 }
+        })
+        request(app)
+            .delete('/products/' + newProduct.id)
+            .set({ access_token })
+            .end(async (err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body.message).toEqual('You have no access');
+                await User.update({ RoleId: 1 }, {
+                    where: { id: 1 }
+                })
+                done();
+            });
+    });
+    it('Success delete product', function (done) {
+        request(app)
+            .delete('/products/' + newProduct.id)
+            .set({ access_token })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(200);
+                expect(res.body.message).toEqual('Deleted product successfully');
+                done();
+            });
+    });
+});
