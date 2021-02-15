@@ -96,3 +96,73 @@ _Response (200 - OK)_
 ```
 
 &nbsp;
+
+### GET /banners/:BannerId
+
+> Read banner by id
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+not needed
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Success",
+    "data": {
+        "id": 3,
+        "image_url": "image banner 1",
+        "status": false,
+        "CategoryId": 1,
+        "createdAt": "2021-02-15T09:27:35.473Z",
+        "updatedAt": "2021-02-15T09:27:35.473Z"
+    }
+}
+```
+
+&nbsp;
+
+### PUT /banners/:BannerId
+
+> Edit banner
+
+_Request Header_
+```
+{
+    access_token: <user access token>
+}
+```
+
+_Request Body_
+```
+{
+    image_url: <image url banner>,
+    status: <Status banner (true/false)>,
+    CategoryId: <id Category>
+}
+```
+
+_Response (200 - OK)_
+```
+{
+    "message": "Updated banner successfully",
+    "data": {
+        "id": 3,
+        "image_url": "image banner 1 edit",
+        "status": false,
+        "CategoryId": 1,
+        "createdAt": "2021-02-15T09:27:35.473Z",
+        "updatedAt": "2021-02-15T10:11:12.901Z"
+    }
+}
+```
+
+&nbsp;
