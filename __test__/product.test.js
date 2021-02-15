@@ -1,19 +1,21 @@
 require('dotenv').config();
 const request = require('supertest');
 const app = require('../app');
-const { sequelize, Product, User } = require('../models');
+const { sequelize, Product, User, Category, ProductCategory } = require('../models');
 const { generateToken } = require('../helpers/jwt');
 
 
 let access_token;
+let category;
+let newProduct;
 
 afterAll(async done => {
     try {
         await Product.destroy({
             where: {}
         });
-        await User.update({ RoleId: 1 }, {
-            where: { id: 1 }
+        await Category.destroy({
+            where: {}
         });
         sequelize.close();
         done();
@@ -33,6 +35,17 @@ beforeAll(async done => {
             email: user.email
         }
         access_token = generateToken(payload);
+        category = await Category.create({ name: 'Category test' });
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
+        await ProductCategory.create({
+            ProductId: newProduct.id,
+            CategoryId: category.id
+        });
         done();
     } catch (err) {
         done();
@@ -180,6 +193,155 @@ describe('POST /products', function () {
                     expect(res.status).toEqual(401);
                     expect(res.body).toHaveProperty('message');
                     expect(res.body.message).toEqual('You have no access');
+                    User.update({ RoleId: 1 }, {
+                        where: { id: 1 }
+                    })
+                        .then(() => {
+                            done();
+                        })
+                        .catch(err => {
+                            done();
+                        })
+                });
+        } catch (err) {
+            done();
+        }
+    });
+});
+
+describe('GET /products', function () {
+    it('It should return all data products', function (done) {
+        request(app)
+            .get('/products')
+            .set({ access_token })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(200);
+                expect(Array.isArray(res.body)).toEqual(true);
+                done();
+            });
+    });
+    it('It should return data products by category', function (done) {
+        request(app)
+            .get('/products')
+            .set({ access_token })
+            .query({ CategoryId: category.id })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(200);
+                expect(Array.isArray(res.body)).toEqual(true);
+                done();
+            });
+    });
+    it('Read product by category not found', function (done) {
+        request(app)
+            .get('/products')
+            .set({ access_token })
+            .query({ CategoryId: 100000000 })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(404);
+                expect(res.body.message).toEqual('Data not found');
+                done();
+            });
+    });
+});
+
+describe('GET /products/:ProductId', function () {
+    it('Success. It should return a product', function (done) {
+        request(app)
+            .get('/products/' + newProduct.id)
+            .set({ access_token })
+            .end((err, res) => {
+                if (err) return done(err);
+
+                expect(res.status).toEqual(200);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body).toHaveProperty('data');
+                expect(res.body.message).toEqual('Success');
+                expect(typeof res.body.data).toEqual('object');
+                done();
+            });
+    });
+    it('Failed. A product not found', function (done) {
+        request(app)
+            .get('/products/' + 10000000)
+            .set({ access_token })
+            .end((err, res) => {
+                if (err) return done(err);
+
+                expect(res.status).toEqual(404);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('Data not found');
+                done();
+            });
+    });
+    it('Failed. No access token', function (done) {
+        request(app)
+            .get('/products/' + newProduct.id)
+            .end((err, res) => {
+                if (err) return done(err);
+
+                expect(res.status).toEqual(401);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('Invalid token');
+                done();
+            });
+    });
+});
+
+describe('PATCH /products/:ProductId set category for product', function () {
+    it('Success updated', function (done) {
+        request(app)
+            .patch('/products/' + newProduct.id)
+            .set({ access_token })
+            .send({ CategoryId: category.id })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(200);
+                expect(res.body.message).toEqual('Set category successfully');
+                done();
+            });
+    });
+    it('No category in database', function (done) {
+        request(app)
+            .patch('/products/' + newProduct.id)
+            .set({ access_token })
+            .send({ CategoryId: 1000000000000 })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(404);
+                expect(res.body.message).toEqual('Data not found');
+                done();
+            });
+    });
+    it('No send access_token', function (done) {
+        request(app)
+            .patch('/products/' + newProduct.id)
+            .send({ CategoryId: category.id })
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body.message).toEqual('Invalid token');
+                done();
+            });
+    });
+    it('User role is not admin', async function (done) {
+        try {
+            await User.update({ RoleId: 2 }, {
+                where: { id: 1 }
+            });
+            request(app)
+                .patch('/products/' + newProduct.id)
+                .set({ access_token })
+                .send({ CategoryId: category.id })
+                .end(async (err, res) => {
+                    if (err) return done(err);
+                    expect(res.status).toEqual(401);
+                    expect(res.body.message).toEqual('You have no access');
+                    await User.update({ RoleId: 1 }, {
+                        where: { id: 1 }
+                    })
                     done();
                 });
         } catch (err) {
