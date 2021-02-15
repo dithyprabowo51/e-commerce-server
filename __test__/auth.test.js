@@ -53,4 +53,17 @@ describe('POST /login', function () {
                 done();
             });
     });
+    it('It should return bad request response that email is empty and password is empty', function (done) {
+        request(app)
+            .post('/login')
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                expect(res.status).toEqual(401);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('Invalid email or password');
+                done();
+            });
+    });
 });
