@@ -10,12 +10,12 @@ let newProduct;
 
 afterAll(async done => {
     try {
-        await Product.destroy({
-            where: {}
-        });
-        await Category.destroy({
-            where: {}
-        });
+        // await Product.destroy({
+        //     where: {}
+        // });
+        // await Category.destroy({
+        //     where: {}
+        // });
         sequelize.close();
         done();
     } catch (err) {
@@ -52,7 +52,10 @@ beforeAll(async done => {
 });
 
 describe('POST /products', function () {
-    it('Success create new product', function (done) {
+    it('Success create new product', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        });
         let body = {
             name: 'Product 1',
             price: 100000,
@@ -75,7 +78,10 @@ describe('POST /products', function () {
                 done();
             });
     });
-    it('No access_token in headers, it should return status 401', function (done) {
+    it('No access_token in headers, it should return status 401', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         let body = {
             name: 'Product 2',
             price: 100000,
@@ -97,6 +103,9 @@ describe('POST /products', function () {
     });
     it('Required fields is empty, it should return status 400', async function (done) {
         try {
+            await User.update({ RoleId: 1 }, {
+                where: { id: 1 }
+            })
             let body = {
                 name: '',
                 price: null,
@@ -122,6 +131,9 @@ describe('POST /products', function () {
     });
     it('Invalid field format, it should return status 400', async function (done) {
         try {
+            await User.update({ RoleId: 1 }, {
+                where: { id: 1 }
+            })
             let body = {
                 name: 'product 3',
                 price: '100000',
@@ -147,6 +159,9 @@ describe('POST /products', function () {
     });
     it('Stock and price must be greater than 0, it should return status 400', async function (done) {
         try {
+            await User.update({ RoleId: 1 }, {
+                where: { id: 1 }
+            })
             let body = {
                 name: 'product 3',
                 price: -100000,
@@ -184,16 +199,13 @@ describe('POST /products', function () {
             .post('/products')
             .send(body)
             .set({ access_token })
-            .end(async (err, res) => {
+            .end((err, res) => {
                 if (err) {
                     return done(err);
                 }
                 expect(res.status).toEqual(401);
                 expect(res.body).toHaveProperty('message');
                 expect(res.body.message).toEqual('You have no access');
-                await User.update({ RoleId: 1 }, {
-                    where: { id: 1 }
-                })
                 done();
             });
     });
@@ -211,7 +223,7 @@ describe('GET /products', function () {
                 done();
             });
     });
-    it('It should return data products by category', function (done) {
+    it('It should return data products by category', async function (done) {
         request(app)
             .get('/products')
             .set({ access_token })
@@ -303,7 +315,10 @@ describe('PATCH /products/:ProductId set category for product', function () {
                 done();
             });
     });
-    it('No category in database', function (done) {
+    it('No category in database', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         request(app)
             .patch('/products/' + newProduct.id)
             .set({ access_token })
@@ -315,7 +330,10 @@ describe('PATCH /products/:ProductId set category for product', function () {
                 done();
             });
     });
-    it('No send access_token', function (done) {
+    it('No send access_token', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         request(app)
             .patch('/products/' + newProduct.id)
             .send({ CategoryId: category.id })
@@ -344,10 +362,10 @@ describe('PATCH /products/:ProductId set category for product', function () {
                 if (err) return done(err);
                 expect(res.status).toEqual(401);
                 expect(res.body.message).toEqual('You have no access');
+                done();
                 await User.update({ RoleId: 1 }, {
                     where: { id: 1 }
-                })
-                done();
+                });
             });
     });
 });
@@ -480,9 +498,6 @@ describe('PUT /products/:ProductId', function () {
                 expect(res.status).toEqual(401);
                 expect(res.body).toHaveProperty('message');
                 expect(res.body.message).toEqual('You have no access');
-                await User.update({ RoleId: 1 }, {
-                    where: { id: 1 }
-                });
                 done();
             });
     });
@@ -503,7 +518,10 @@ describe('DELETE /products/:ProductId', function () {
                 done();
             });
     });
-    it('Failed, no access_token', function (done) {
+    it('Failed, no access_token', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         request(app)
             .delete('/products/' + newProduct.id)
             .end((err, res) => {
@@ -524,9 +542,6 @@ describe('DELETE /products/:ProductId', function () {
                 if (err) return done(err);
                 expect(res.status).toEqual(401);
                 expect(res.body.message).toEqual('You have no access');
-                await User.update({ RoleId: 1 }, {
-                    where: { id: 1 }
-                })
                 done();
             });
     });
