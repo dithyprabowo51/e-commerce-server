@@ -291,6 +291,15 @@ describe('GET /products/:ProductId', function () {
 
 describe('PATCH /products/:ProductId set category for product', function () {
     it('Success updated', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
         category = await Category.create({ name: 'Category test' });
         request(app)
             .patch('/products/' + newProduct.id)
@@ -331,6 +340,12 @@ describe('PATCH /products/:ProductId set category for product', function () {
             await User.update({ RoleId: 2 }, {
                 where: { id: 1 }
             });
+            newProduct = await Product.create({
+                name: 'product test',
+                price: 100000,
+                image_url: 'image test',
+                stock: 10
+            })
             request(app)
                 .patch('/products/' + newProduct.id)
                 .set({ access_token })
@@ -351,7 +366,16 @@ describe('PATCH /products/:ProductId set category for product', function () {
 });
 
 describe('PUT /products/:ProductId', function () {
-    it('Success update product', function (done) {
+    it('Success update product', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
         let body = {
             name: 'Product name edit',
             price: 100000,
@@ -370,7 +394,16 @@ describe('PUT /products/:ProductId', function () {
                 done();
             });
     });
-    it('Failed, stock and price less than 0', function (done) {
+    it('Failed, stock and price less than 0', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
         let body = {
             name: 'Product name edit',
             price: -100000,
@@ -389,7 +422,16 @@ describe('PUT /products/:ProductId', function () {
                 done();
             });
     });
-    it('Failed, required fields is empty', function (done) {
+    it('Failed, required fields is empty', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        });
         let body = {
             name: '',
             price: null,
@@ -433,6 +475,12 @@ describe('PUT /products/:ProductId', function () {
             image_url: 'image edit',
             stock: 10
         }
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        });
         await User.update({ RoleId: 2 }, {
             where: { id: 1 }
         });
@@ -454,7 +502,10 @@ describe('PUT /products/:ProductId', function () {
 });
 
 describe('DELETE /products/:ProductId', function () {
-    it('Failed, id product not found', function (done) {
+    it('Failed, id product not found', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         request(app)
             .delete('/products/' + 1000000)
             .set({ access_token })
@@ -493,6 +544,9 @@ describe('DELETE /products/:ProductId', function () {
             });
     });
     it('Success delete product', async function (done) {
+        await User.update({ RoleId: 1 }, {
+            where: { id: 1 }
+        })
         newProduct = await Product.create({
             name: 'product test',
             price: 100000,
