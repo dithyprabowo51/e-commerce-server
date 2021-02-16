@@ -171,40 +171,31 @@ describe('POST /products', function () {
         }
     });
     it('Role is not admin, it should return status 401', async function (done) {
-        try {
-            let body = {
-                name: 'Product 2',
-                price: 100000,
-                image_url: 'image url 2',
-                stock: 10
-            }
-            await User.update({ RoleId: 2 }, {
-                where: { id: 1 }
-            });
-            request(app)
-                .post('/products')
-                .send(body)
-                .set({ access_token })
-                .end((err, res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    expect(res.status).toEqual(401);
-                    expect(res.body).toHaveProperty('message');
-                    expect(res.body.message).toEqual('You have no access');
-                    User.update({ RoleId: 1 }, {
-                        where: { id: 1 }
-                    })
-                        .then(() => {
-                            done();
-                        })
-                        .catch(err => {
-                            done();
-                        })
-                });
-        } catch (err) {
-            done();
+        let body = {
+            name: 'Product 2',
+            price: 100000,
+            image_url: 'image url 2',
+            stock: 10
         }
+        await User.update({ RoleId: 2 }, {
+            where: { id: 1 }
+        });
+        request(app)
+            .post('/products')
+            .send(body)
+            .set({ access_token })
+            .end(async (err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                expect(res.status).toEqual(401);
+                expect(res.body).toHaveProperty('message');
+                expect(res.body.message).toEqual('You have no access');
+                await User.update({ RoleId: 1 }, {
+                    where: { id: 1 }
+                })
+                done();
+            });
     });
 });
 
@@ -336,32 +327,28 @@ describe('PATCH /products/:ProductId set category for product', function () {
             });
     });
     it('User role is not admin', async function (done) {
-        try {
-            await User.update({ RoleId: 2 }, {
-                where: { id: 1 }
+        await User.update({ RoleId: 2 }, {
+            where: { id: 1 }
+        });
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
+        request(app)
+            .patch('/products/' + newProduct.id)
+            .set({ access_token })
+            .send({ CategoryId: category.id })
+            .end(async (err, res) => {
+                if (err) return done(err);
+                expect(res.status).toEqual(401);
+                expect(res.body.message).toEqual('You have no access');
+                await User.update({ RoleId: 1 }, {
+                    where: { id: 1 }
+                })
+                done();
             });
-            newProduct = await Product.create({
-                name: 'product test',
-                price: 100000,
-                image_url: 'image test',
-                stock: 10
-            })
-            request(app)
-                .patch('/products/' + newProduct.id)
-                .set({ access_token })
-                .send({ CategoryId: category.id })
-                .end(async (err, res) => {
-                    if (err) return done(err);
-                    expect(res.status).toEqual(401);
-                    expect(res.body.message).toEqual('You have no access');
-                    await User.update({ RoleId: 1 }, {
-                        where: { id: 1 }
-                    })
-                    done();
-                });
-        } catch (err) {
-            done();
-        }
     });
 });
 
