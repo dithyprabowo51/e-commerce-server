@@ -290,7 +290,8 @@ describe('GET /products/:ProductId', function () {
 });
 
 describe('PATCH /products/:ProductId set category for product', function () {
-    it('Success updated', function (done) {
+    it('Success updated', async function (done) {
+        category = await Category.create({ name: 'Category test' });
         request(app)
             .patch('/products/' + newProduct.id)
             .set({ access_token })
@@ -491,7 +492,13 @@ describe('DELETE /products/:ProductId', function () {
                 done();
             });
     });
-    it('Success delete product', function (done) {
+    it('Success delete product', async function (done) {
+        newProduct = await Product.create({
+            name: 'product test',
+            price: 100000,
+            image_url: 'image test',
+            stock: 10
+        })
         request(app)
             .delete('/products/' + newProduct.id)
             .set({ access_token })
