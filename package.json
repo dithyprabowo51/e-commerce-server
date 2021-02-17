@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node bin/http.js",
     "test": "jest",
     "dev": "NODE_ENV=development npx nodemon bin/http.js"
   },
