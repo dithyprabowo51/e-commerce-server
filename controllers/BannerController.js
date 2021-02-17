@@ -18,7 +18,8 @@ class BannerController {
     static async readAllBanner(req, res, next) {
         try {
             const banners = await Banner.findAll({
-                include: Category
+                include: Category,
+                order: [['id', 'ASC']]
             });
             if (banners.length === 0) throw 404;
             const msg = {

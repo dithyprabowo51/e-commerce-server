@@ -20,7 +20,9 @@ class CategoryController {
 
     static async readAllCategories(req, res, next) {
         try {
-            const categories = await Category.findAll();
+            const categories = await Category.findAll({
+                order: [['id', 'ASC']]
+            });
             if (categories.length === 0) throw 404;
             const msg = {
                 message: 'Success',

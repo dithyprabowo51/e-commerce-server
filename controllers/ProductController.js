@@ -55,6 +55,7 @@ class ProductController {
             let products;
             if (CategoryId) {
                 products = await Product.findAll({
+                    order: [['id', 'ASC']],
                     include: {
                         model: Category,
                         where: { id: CategoryId }
@@ -62,6 +63,7 @@ class ProductController {
                 });
             } else {
                 products = await Product.findAll({
+                    order: [['id', 'ASC']],
                     include: {
                         model: Category
                     }
