@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Banner.belongsTo(models.Category, { foreignKey: 'CategoryId' });
     }
   };
   Banner.init({

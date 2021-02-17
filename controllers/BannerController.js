@@ -1,4 +1,4 @@
-const { Banner } = require('../models');
+const { Banner, Category } = require('../models');
 
 class BannerController {
     static async addBanner(req, res, next) {
@@ -17,7 +17,9 @@ class BannerController {
 
     static async readAllBanner(req, res, next) {
         try {
-            const banners = await Banner.findAll();
+            const banners = await Banner.findAll({
+                include: Category
+            });
             if (banners.length === 0) throw 404;
             const msg = {
                 message: 'Success',
@@ -32,7 +34,9 @@ class BannerController {
     static async readBannerById(req, res, next) {
         try {
             const { BannerId } = req.params;
-            const banner = await Banner.findByPk(BannerId);
+            const banner = await Banner.findByPk(BannerId, {
+                include: Category
+            });
             const msg = {
                 message: 'Success',
                 data: banner
