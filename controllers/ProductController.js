@@ -69,7 +69,7 @@ class ProductController {
                     }
                 });
             }
-            if (products.length === 0) throw 404;
+            
             res.status(200).json(products);
         } catch (err) {
             next(err);

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasOne(models.Profile, { foreignKey: 'UserId' });
       User.belongsTo(models.Role, { foreignKey: 'RoleId' });
+      User.hasOne(models.Order, { foreignKey: 'UserId' });
     }
   };
   User.init({
@@ -36,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       beforeCreate: (user, opt) => {
         let hash = hashing(user.password);
         user.password = hash;
+        user.RoleId = 2;
       }
     },
     sequelize,

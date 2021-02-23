@@ -3,13 +3,13 @@ const authRoutes = require('./authRoutes');
 const productRoutes = require('./productRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const bannerRoutes = require('./bannerRoutes');
-const authentication = require('../middlewares/authentication');
+const orderRoutes = require('./orderRoutes');
 
-router.use('/login', authRoutes);
+router.use(authRoutes);
 
-router.use(authentication);
 router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/banners', bannerRoutes);
+router.use('/orders', orderRoutes);
 
 module.exports = router;

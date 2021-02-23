@@ -1,7 +1,7 @@
 const errorHandling = (err, req, res, next) => {
     if (err === 'Invalid email or password' || err === 'Invalid token' || err === 'You have no access') {
         res.status(401).json({ message: err });
-    } else if (err.name === 'SequelizeValidationError') {
+    } else if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
         const errMessages = err.errors.map(e => e.message);
         res.status(400).json({ errors: errMessages });
     } else if (err === 404) {

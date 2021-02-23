@@ -17,11 +17,28 @@ class BannerController {
 
     static async readAllBanner(req, res, next) {
         try {
-            const banners = await Banner.findAll({
-                include: Category,
-                order: [['id', 'ASC']]
-            });
-            if (banners.length === 0) throw 404;
+            const {CategoryId} = req.query;
+            const {status} = req.query;
+            let banners;
+            if (!CategoryId && !status) {
+                banners = await Banner.findAll({
+                    include: Category,
+                    order: [['id', 'ASC']]
+                });
+            } else if(CategoryId) {
+                banners = await Banner.findAll({
+                    where: {CategoryId},
+                    include: Category,
+                    order: [['id', 'ASC']]
+                });
+            } else {
+                banners = await Banner.findAll({
+                    where: {status},
+                    include: Category,
+                    order: [['id', 'ASC']]
+                });
+            }
+            
             const msg = {
                 message: 'Success',
                 data: banners

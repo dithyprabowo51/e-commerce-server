@@ -1,4 +1,4 @@
-const { Category } = require('../models');
+const { Category, Banner } = require('../models');
 
 class CategoryController {
     static async addcategory(req, res, next) {
@@ -21,9 +21,12 @@ class CategoryController {
     static async readAllCategories(req, res, next) {
         try {
             const categories = await Category.findAll({
-                order: [['id', 'ASC']]
+                order: [['id', 'ASC']],
+                include: {
+                    model: Banner
+                }
             });
-            if (categories.length === 0) throw 404;
+            
             const msg = {
                 message: 'Success',
                 data: categories

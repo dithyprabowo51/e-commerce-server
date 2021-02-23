@@ -32,6 +32,20 @@ class AuthController {
             next(err);
         }
     }
+
+    static async register (req, res, next) {
+        try {
+            const { email, password } = req.body;
+            const newUser = await User.create({ email, password });
+            const msg = {
+                id: newUser.id,
+                email: newUser.email
+            }
+            res.status(201).json(msg);
+        } catch(err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = AuthController;
