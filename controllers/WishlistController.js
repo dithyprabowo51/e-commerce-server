@@ -1,4 +1,4 @@
-const {User, Product, Wishlist} = require('../models');
+const {User, Product, Wishlist, Category} = require('../models');
 
 class WishlistController {
     static async addWishlist (req, res, next) {
@@ -26,7 +26,10 @@ class WishlistController {
             const UserId = req.user.id;
             const wishlists = await Wishlist.findAll({
                 where: {UserId},
-                include: Product,
+                include: {
+                    model: Product,
+                    include: Category
+                },
                 order: [['id', 'ASC']]
             })
             const msg = {
