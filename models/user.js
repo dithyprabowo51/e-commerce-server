@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.Profile, { foreignKey: 'UserId' });
       User.belongsTo(models.Role, { foreignKey: 'RoleId' });
       User.hasOne(models.Order, { foreignKey: 'UserId' });
+      User.hasMany(models.Wishlist, {foreignKey: 'UserId'});
     }
   };
   User.init({
