@@ -25,13 +25,33 @@ class ProductController {
         try {
             const { ProductId } = req.params;
             const { CategoryId } = req.body;
-            await ProductCategory.create({ ProductId, CategoryId });
+            const productCategory = await ProductCategory.findOne({
+                where: {ProductId, CategoryId}
+            })
+            if (!productCategory) {
+                await ProductCategory.create({ ProductId, CategoryId });
+            }
             const msg = {
                 message: 'Set category successfully'
             }
             res.status(200).json(msg);
         } catch (err) {
             next(err);
+        }
+    }
+
+    static async unsetCategory (req, res, next) {
+        try {
+            const {ProductId} = req.params
+            const {CategoryId} = req.body
+            await ProductCategory.destroy({
+                where: {ProductId, CategoryId}
+            })
+            res.status(200).json({
+                message: 'Unset category successfully'
+            })
+        } catch(err) {
+            next(err)
         }
     }
 
