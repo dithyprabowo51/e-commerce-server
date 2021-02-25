@@ -119,7 +119,7 @@ class OrderController {
                     ProductId
                 }
             });
-            if (!orderProduct || orderProduct.quantity === 0) throw 404;
+            if (!orderProduct || orderProduct.quantity <= 1) throw 404;
 
             await Product.increment('stock', {
                 where: { id: ProductId }
